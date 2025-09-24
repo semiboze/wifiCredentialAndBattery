@@ -12,7 +12,7 @@
 #endif
 
 #include "private.h"
-#include "history.h"
+// #include "history.h"
 
 // #define wifiLed 2
 #define BLYNK_TEMPLATE_ID "YourTemplateID"
@@ -21,6 +21,7 @@
 // ライブラリのインクルード
 #include <ArduinoOTA.h>
 #include <EEPROM.h>
+#include <Adafruit_INA226.h> // <-- 1. ライブラリをインクルード
 #include <INA226_WE.h>
 #include <time.h>
 #if defined(ESP8266)
@@ -37,6 +38,7 @@
   const int SOLAR_CURRENT_PIN = A0;
   const int I2C_SDA_PIN = 4;
   const int I2C_SCL_PIN = 5;
+  #define LED_BUILTIN 2
 #else
   #include <HTTPClient.h>
   #include <ESP32WebServer.h>
