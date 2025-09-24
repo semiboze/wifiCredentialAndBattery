@@ -1,2 +1,24 @@
 # 秘密の情報が書かれているのでアップロードしない
 private.cpp
+
+
+# PlatformIO
+#
+# Ignore toolchain, framework, library and build output folders
+.pio/
+.vscode/
+
+# OS-generated files
+#
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+.Spotlight-V100
+.Trashes
