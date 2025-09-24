@@ -1,0 +1,2 @@
+# wifiCredentialAndBattery
+Wi-Fiあとから決めアンドLiFePO4のSOC管理
