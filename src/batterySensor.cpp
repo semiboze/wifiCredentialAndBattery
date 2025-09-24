@@ -1,3 +1,7 @@
+#include <Arduino.h>
+#include <Adafruit_INA226.h> // INA226ライブラリ
+#include "private.h"
+#include "config.h"
 
 void setupSensors() {
   #if defined(ARDUINO_ARCH_ESP8266)

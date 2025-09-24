@@ -1,24 +1,17 @@
 // #define _BLYNK_VALID // Blynk有効有無デバッグ
 
 #define DEBUG_MODE
-#ifdef DEBUG_MODE
-  #define DEBUG_PRINT(...)     Serial.print(__VA_ARGS__)
-  #define DEBUG_PRINTLN(...)   Serial.print(__VA_ARGS__)
-  #define DEBUG_PRINTF(fmt, ...)  Serial.printf(fmt, ##__VA_ARGS__)
-#else
-  #define DEBUG_PRINT(...)
-  #define DEBUG_PRINTLN(...)
-  #define DEBUG_PRINTF(...)
-#endif
 
 #include "private.h"
 // #include "history.h"
+#include "config.h"
 
 // #define wifiLed 2
 #define BLYNK_TEMPLATE_ID "YourTemplateID"
 #define BLYNK_TEMPLATE_NAME "YourTemplateName"
 
 // ライブラリのインクルード
+#include <Arduino.h>
 #include <ArduinoOTA.h>
 #include <EEPROM.h>
 #include <Adafruit_INA226.h> // <-- 1. ライブラリをインクルード
@@ -66,7 +59,6 @@
 // タイマー・遅延設定
 const long TIMER_INTERVAL = 5000L;
 
-#define JST     3600* 9
 
 // --- センサー設定 ---
 const float R1 = 330000.0;
