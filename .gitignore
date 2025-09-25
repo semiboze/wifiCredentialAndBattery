@@ -24,3 +24,5 @@ $RECYCLE.BIN/
 .LSOverride
 .Spotlight-V100
 .Trashes
+
+private.cpp
