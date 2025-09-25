@@ -2,73 +2,23 @@
 
 #define DEBUG_MODE
 
-#include "private.h"
-// #include "history.h"
 #include "config.h"
+#include "private.h"
 
 // #define wifiLed 2
-#define BLYNK_TEMPLATE_ID "YourTemplateID"
-#define BLYNK_TEMPLATE_NAME "YourTemplateName"
+
 
 // ライブラリのインクルード
 #include <Arduino.h>
 #include <ArduinoOTA.h>
 #include <EEPROM.h>
-#include <Adafruit_INA226.h> // <-- 1. ライブラリをインクルード
+// #include <Adafruit_INA226.h> // <-- 1. ライブラリをインクルード
 #include <INA226_WE.h>
 #include <time.h>
-#if defined(ESP8266)
-  #include <ESP8266HTTPClient.h>
-  #include <BlynkSimpleEsp8266.h>
-  #include <ESP8266WiFi.h>
-  #include <ESP8266mDNS.h>
-  #include <ESP8266HTTPClient.h>
-  #include <ESP8266WebServer.h>
-  #include <WiFiClientSecureBearSSL.h>
-  ESP8266WebServer server(80);
-  const char* BOARD_TYPE = "ESP8266";
-  const int SOLAR_VOLTAGE_PIN = A0;
-  const int SOLAR_CURRENT_PIN = A0;
-  const int I2C_SDA_PIN = 4;
-  const int I2C_SCL_PIN = 5;
-  #define LED_BUILTIN 2
-#else
-  #include <HTTPClient.h>
-  #include <ESP32WebServer.h>
-  #include <BlynkSimpleEsp32.h>
-  #include <WiFi.h>
-  // #include <ESPmDNS.h>
-  #include <HTTPClient.h>
-  #include <WiFiClientSecure.h>
-  #define LED_BUILTIN 2
-  ESP32WebServer server(80);
-  const char* BOARD_TYPE = "ESP32";
-  const int SOLAR_VOLTAGE_PIN = 35;
-  const int SOLAR_CURRENT_PIN = 34;
-#endif
 
-// Virtual Pinの定義
-#define VPIN_TIME           V10
-#define VPIN_MAC            V50
-#define VPIN_SOLAR_VOLTAGE  V1
-#define VPIN_SOLAR_CURRENT  V1
-#define VPIN_SOLAR_POWER    V2
-#define VPIN_BATT_VOLTAGE   V3
-#define VPIN_BATT_CURRENT   V4
-#define VPIN_BATT_POWER     V5
-// タイマー・遅延設定
-const long TIMER_INTERVAL = 5000L;
-
-
-// --- センサー設定 ---
-const float R1 = 330000.0;
-const float R2 = 10000.0;
-const float ACS_ZERO_CURRENT_VOLTAGE = 1.65;
-const float ACS_SENSITIVITY = 0.040;
-const float SHUNT_RESISTANCE_OHMS = 0.00075;
-const float MAX_EXPECTED_CURRENT_AMPS = 100.0;
 
 // グローバル変数
+ESP32WebServer server(80);
 BlynkTimer timer;
 volatile bool periodTaskTrigger = false;
 INA226_WE ina226 = INA226_WE(0x40);
@@ -112,7 +62,7 @@ int ledBlinkCounter = 0;
 bool ledState = false;
 
 
-// 関数プロトタイプ宣言
+// --- 関数プロトタイプ宣言 ---
 // WiFi ネットワーク関連
 bool fetchIPFromGist(int ipData[4]);// GitHub GistからグローバルIPアドレスを取得する
 void createWebServer();// WiFi設定用のWebページを作成し、リクエストに対する処理を定義する
@@ -124,17 +74,22 @@ void setupOTA();
 // -- Blynk関連 --
 void BlynkConnect();// Blynkサーバーへの接続処理を行う
 void aliveReport();// 定期的に実行し生存時刻を報告する
+void periodicTasks();   // 定期的に実行するタスク
 void reconnectBlynk();// Blynkサーバーから切断された場合に再接続を試みる
 
 // -- ハードウェア・センサー制御 --
 void IRAM_ATTR onTimer();// 割り込みタイマーによって定期的に実行される関数
 void updateLedStatus();// 現在の状態に応じて、本体LEDの点滅パターンを制御する
 void setupSensors();//INA226読み出しポートの初期化
+void measureSolar();    // PV値測定
+void measureBattery();  // バッテリー値測定
 
 // -- ユーティリティ --
 int DisplayTime(char *stringsTime, int *int_h, int *int_m, int *int_s);// NTPサーバーから取得した現在時刻を「時:分:秒」の文字列に整形する
 void handleBlinking();
 void parseMacAddress(const char* macStr, byte* mac);// MACアドレスの文字列をバイト配列に変換する
+
+
 
 void setup() {
   Serial.begin(115200);

@@ -1,7 +1,10 @@
+#include "config.h"       // これを必ず一番上に置きます
 #include <Arduino.h>
-#include <Adafruit_INA226.h> // INA226ライブラリ
 #include "private.h"
-#include "config.h"
+#include <INA226_WE.h>
+
+#include <Blynk/BlynkApi.h>
+extern BlynkWifi Blynk;
 
 void setupSensors() {
   #if defined(ARDUINO_ARCH_ESP8266)
