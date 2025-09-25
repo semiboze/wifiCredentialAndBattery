@@ -1,6 +1,6 @@
 #ifndef PRIVATE_H
 #define PRIVATE_H
-#include <Arduino.h> // <-- この行を追加！
+#include <Arduino.h> // 
 // WiFi接続情報
 extern const char* WIFI_SSID;
 extern const char* WIFI_PASSWORD;

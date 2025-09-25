@@ -10,11 +10,6 @@
   #include <ESP8266HTTPClient.h>
   #include <ESP8266WebServer.h>
   #include <WiFiClientSecureBearSSL.h>
-  // const char* BOARD_TYPE = "ESP8266";
-  // const int SOLAR_VOLTAGE_PIN = A0;
-  // const int SOLAR_CURRENT_PIN = A0;
-  // const int I2C_SDA_PIN = 4;
-  // const int I2C_SCL_PIN = 5;
 #else
   #include <HTTPClient.h>
   #include <ESP32WebServer.h>
@@ -24,9 +19,6 @@
   #include <HTTPClient.h>
   #include <WiFiClientSecure.h>
   #define LED_BUILTIN 2
-  // const char* BOARD_TYPE = "ESP32";
-  // const int SOLAR_VOLTAGE_PIN = 35;
-  // const int SOLAR_CURRENT_PIN = 34;
 #endif
 
 #ifdef DEBUG_MODE
@@ -52,14 +44,16 @@ extern INA226_WE ina226;
 #define VPIN_BATT_VOLTAGE   V4
 #define VPIN_BATT_CURRENT   V5
 #define VPIN_BATT_POWER     V6
+#define VPIN_BATT_SOC       V7 // <-- この行を追加 (SOC = State of Charge)
 // タイマー・遅延設定
 #define TIMER_INTERVAL  5000L
 
 // --- センサー設定 ---
 #define  R1  330000.0
 #define R2  10000.0
-#define ACS_ZERO_CURRENT_VOLTAGE  1.65
-#define ACS_SENSITIVITY  0.040
+#define ACS_ZERO_CURRENT_VOLTAGE  1.65  // <-- この行を追加
+// #define ACS_SENSITIVITY  0.020       // ACS758 LCB-100B
+#define ACS_SENSITIVITY  0.040          // ACS758 LCB-050B
 #define SHUNT_RESISTANCE_OHMS  0.00075
 #define MAX_EXPECTED_CURRENT_AMPS  100.0
 

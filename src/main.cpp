@@ -5,14 +5,10 @@
 #include "config.h"
 #include "private.h"
 
-// #define wifiLed 2
-
-
 // ライブラリのインクルード
 #include <Arduino.h>
 #include <ArduinoOTA.h>
 #include <EEPROM.h>
-// #include <Adafruit_INA226.h> // <-- 1. ライブラリをインクルード
 #include <INA226_WE.h>
 #include <time.h>
 
@@ -83,13 +79,12 @@ void updateLedStatus();// 現在の状態に応じて、本体LEDの点滅パタ
 void setupSensors();//INA226読み出しポートの初期化
 void measureSolar();    // PV値測定
 void measureBattery();  // バッテリー値測定
+int calculateSoc(float); // バッテリー電圧からSOCを計算する
 
 // -- ユーティリティ --
 int DisplayTime(char *stringsTime, int *int_h, int *int_m, int *int_s);// NTPサーバーから取得した現在時刻を「時:分:秒」の文字列に整形する
-void handleBlinking();
+void handleBlinking(); // LEDの点滅を管理する
 void parseMacAddress(const char* macStr, byte* mac);// MACアドレスの文字列をバイト配列に変換する
-
-
 
 void setup() {
   Serial.begin(115200);
@@ -804,9 +799,41 @@ void measureBattery() {
   float battery_current = ina226.getCurrent_A();
   float battery_power = ina226.getBusPower();
 
-  Serial.printf("[BATTERY] V: %.2f V | A: %.2f A | P: %.2f W\n", battery_voltage, battery_current, battery_power);
+  // ↓↓↓ ここから追加 ↓↓↓
+  int battery_soc = calculateSoc(battery_voltage);
+  Serial.printf("[BATTERY] V: %.2f V | A: %.2f A | P: %.2f W | SOC: %d %%\n", battery_voltage, battery_current, battery_power, battery_soc);
+  Blynk.virtualWrite(VPIN_BATT_SOC, battery_soc);
+  // ↑↑↑ ここまで追加 ↑↑↑
 
   Blynk.virtualWrite(VPIN_BATT_VOLTAGE, battery_voltage);
   Blynk.virtualWrite(VPIN_BATT_CURRENT, battery_current);
   Blynk.virtualWrite(VPIN_BATT_POWER, battery_power);
+}
+// バッテリー電圧から残量(%)を簡易的に計算する関数
+int calculateSoc(float voltage) {
+  // LiFePO4 (8S 25.6V)のおおよその電圧-残量マップ
+  // これは無負荷時の電圧の目安です
+  if (voltage >= 28.8) {
+    return 100;
+  } else if (voltage >= 28.0) {
+    return 99;
+  } else if (voltage >= 26.8) {
+    return 90;
+  } else if (voltage >= 26.6) {
+    return 80;
+  } else if (voltage >= 26.4) {
+    return 70;
+  } else if (voltage >= 26.2) {
+    return 50;
+  } else if (voltage >= 26.0) {
+    return 30;
+  } else if (voltage >= 25.6) {
+    return 20;
+  } else if (voltage >= 24.0) {
+    return 10;
+  } else if (voltage >= 20.0) {
+    return 5;
+  } else {
+    return 0;
+  }
 }

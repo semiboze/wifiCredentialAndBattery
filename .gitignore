@@ -1,7 +1,6 @@
 # 秘密の情報が書かれているのでアップロードしない
 private.cpp
 
-
 # PlatformIO
 #
 # Ignore toolchain, framework, library and build output folders
@@ -24,5 +23,3 @@ $RECYCLE.BIN/
 .LSOverride
 .Spotlight-V100
 .Trashes
-
-private.cpp
